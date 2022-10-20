@@ -2,10 +2,12 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import { useOrderDetail } from '../../contexts/OrderDetails';
+import AlterBanner from '../common/AlertBanner';
 
 export default function OrderConfirmation ({setOrderPhase}) {
     const { resetOrder } = useOrderDetail();
     const [orderNumber, setOrderNumber] = useState(null);
+    const [error, setError] = useState(false)
 
     useEffect(()=> {
         axios.post(`http://localhost:3030/order`)
@@ -13,9 +15,22 @@ export default function OrderConfirmation ({setOrderPhase}) {
             setOrderNumber(res.data.orderNumber)
         })
         .catch((error)=> {
-            // error handle
+           setError(true);
         })
     },[]);
+
+    const newOrderButton = (
+        <Button onClick={handleClick}>Create new order</Button>
+    );
+
+    if (error) {
+        return (
+            <>
+                <AlterBanner message={null} variant={null} />
+                {newOrderButton}
+            </>
+        )
+    }
 
     function handleClick() {
         resetOrder();
@@ -30,7 +45,7 @@ export default function OrderConfirmation ({setOrderPhase}) {
                 <p style={{fontSize: '25%'}}>
                     as per our terms and conditions, nothings will happen now
                 </p>
-                <Button onClick={handleClick}>Create new order</Button>
+                {newOrderButton}
             </div>
         )
     } else {
